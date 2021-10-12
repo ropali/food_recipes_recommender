@@ -2,7 +2,7 @@
 import click
 from pathlib import Path
 from dotenv import find_dotenv, load_dotenv
-from ..database.models import PlaceModel
+from ..database.models import RecipeModel
 import pandas as pd
 from ..utils.logger import Logger
 import sys
@@ -24,7 +24,7 @@ def main():
 
     save_path = 'data/raw/data.csv'
 
-    model = PlaceModel()
+    model = RecipeModel()
     
     if model.all():
         table_to_csv(f'select * from {model.TABLE_NAME}', model.con,save_path)

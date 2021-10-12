@@ -1,7 +1,7 @@
 import json
 from bs4 import BeautifulSoup
 import requests
-from ..database.models import PlaceModel, UrlVisited
+from ..database.models import RecipeModel, UrlVisited
 import time
 from ..utils.logger import Logger
 import math
@@ -22,7 +22,7 @@ class Scrapper:
 
     
     def __init__(self):
-        self.model = PlaceModel()
+        self.model = RecipeModel()
         self.url_visted = UrlVisited()
         self.logger = Logger(__name__, std_out=True)
 
@@ -52,37 +52,52 @@ class Scrapper:
         prep_cook_timings = None
 
         # scrapping starts
-        title = soup.find('h1', class_='headline').text
+        try:
+            title = soup.find('h1', class_='headline').text
 
-        recipe_info_ele = soup.find('section',class_="recipeInstructions").find_all('li')
+            recipe_info_ele = soup.find('section',class_="recipeInstructions").find_all('li')
 
-        for step,li in enumerate(recipe_info_ele,1):
-            recipe_steps[f'step_{step}'] = li.text.strip()
+            for step,li in enumerate(recipe_info_ele,1):
+                recipe_steps[f'step_{step}'] = li.text.strip()
 
-        image_ele = soup.find('div', class_='lazy-image')
-       
-        if image_ele.attrs.get('data-src'):
-            image_url = image_ele.attrs['data-src']
+            image_ele = soup.find('div', class_='lazy-image')
+        
+            if image_ele.attrs.get('data-src'):
+                image_url = image_ele.attrs['data-src']
 
-        ingredients_ele = soup.find('ul',class_='ingredients-section').find_all('li')
+            ingredients_ele = soup.find('ul',class_='ingredients-section').find_all('li')
 
-        for li in ingredients_ele:
-            ingredients.append(li.text.strip())
+            for li in ingredients_ele:
+                ingredients.append(li.text.strip())
 
-        nutritions = soup.find('div', class_='recipe-nutrition-section').text
+            nutritions = soup.find('div', class_='recipe-nutrition-section').text
 
-        summary = soup.find("div", class_="recipe-summary").text
+            summary = soup.find("div", class_="recipe-summary").text
 
-        # prep and cook timings
-        prep_cook_summary_ele = soup.find_all("div", class_="recipe-meta-item")
+            # prep and cook timings
+            prep_cook_summary_ele = soup.find_all("div", class_="recipe-meta-item")
 
-        prep_cook_timings_list = []
-        for ele in prep_cook_summary_ele:
-            prep_cook_timings_list.append(ele.text.strip())
+            prep_cook_timings_list = []
+            for ele in prep_cook_summary_ele:
+                prep_cook_timings_list.append(ele.text.strip())
 
-        prep_cook_timings = ",".join(prep_cook_timings_list)
+            prep_cook_timings = ",".join(prep_cook_timings_list)
+        except Exception:
+            return
 
-        print(title,summary,prep_cook_timings,image_url)
+        data = {
+            "url": url,
+            "recipe": json.dumps(recipe_steps),
+            "title": title.strip(),
+            "summary": summary.strip(),
+            "ingredients": ",".join(ingredients),
+            "nutritions": nutritions,
+            "prep_cook_timings": prep_cook_timings,
+            "image_url": image_url
+        }
+        # print(ingredients)
+        self.model.save(data)
+        self.logger.info(f"Saving {title} recipe to the database...")
 
        
 
@@ -99,6 +114,7 @@ class Scrapper:
             anchor_tag = card.find('a',class_='recipeCard__titleLink')
 
             self.extract_recipe(anchor_tag['href'])
+            time.sleep(self.sleep_for)
            
 
 
@@ -111,13 +127,13 @@ class Scrapper:
 
             url = self.base_url.format(i+1)
 
-            # if self.url_visted.find(url):
-            #     return
+            if self.url_visted.find(url):
+                return
             
 
             self.extract(url)
 
-            # self.url_visted.save({'link': url})
+            self.url_visted.save({'link': url})
 
             self.logger.info(f'Processed page no. {i+1}')
 

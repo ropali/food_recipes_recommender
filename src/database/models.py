@@ -1,20 +1,20 @@
 from .db import DB
 
 
-class PlaceModel(DB):
+class RecipeModel(DB):
 
-    TABLE_NAME = 'places'
+    TABLE_NAME = 'reciepes'
 
     def __init__(self):
         super().__init__()
         self.cursor.execute(
-            f"CREATE TABLE IF NOT EXISTS {self.TABLE_NAME} (url TEXT, desc TEXT, state VARCHAR(50), country VARCHAR(50), ratings VARCHAR(15), total_reviews VARCHAR(20), tagline VARCHAR(200) ,images TEXT)")
+            f"CREATE TABLE IF NOT EXISTS {self.TABLE_NAME} (url VARCHAR(250), recipe TEXT, title VARCHAR(200), summary TEXT, ingredients TEXT, nutritions TEXT, prep_cook_timings TEXT ,image_url TEXT)")
 
         self.con.commit()
 
     def save(self, data):
         self.insert(
-            f"INSERT INTO {self.TABLE_NAME} VALUES (:url,:desc,:state,:country,:ratings,:total_reviews,:tagline,:images)", data)
+            f"INSERT INTO {self.TABLE_NAME} VALUES (:url,:recipe,:title,:summary,:ingredients,:nutritions,:prep_cook_timings,:image_url)", data)
 
     def all(self, **kwargs):
         return self.find_all(f"select * from {self.TABLE_NAME}")
