@@ -8,13 +8,13 @@ import math
 
 
 class Scrapper:
-    """Scraps the data from holidify.com"""
+    """Scraps the data from allrecipes.com"""
 
     sleep_for = 2
 
     data = []
 
-    source_name = "holidify.com"  # source of the data
+    source_name = "allrecipes.com"  # source of the data
 
     total_pages = 37
 
@@ -37,16 +37,54 @@ class Scrapper:
 
         soup = BeautifulSoup(page, 'lxml')
 
-        title = soup.find('h1', class_='headline').text
+        title = None
+
+        summary = None
 
         recipe_steps = {}
+
+        image_url = None
+
+        ingredients = []
+
+        nutritions = None
+
+        prep_cook_timings = None
+
+        # scrapping starts
+        title = soup.find('h1', class_='headline').text
 
         recipe_info_ele = soup.find('section',class_="recipeInstructions").find_all('li')
 
         for step,li in enumerate(recipe_info_ele,1):
             recipe_steps[f'step_{step}'] = li.text.strip()
 
-        print(recipe_steps)
+        image_ele = soup.find('div', class_='lazy-image')
+       
+        if image_ele.attrs.get('data-src'):
+            image_url = image_ele.attrs['data-src']
+
+        ingredients_ele = soup.find('ul',class_='ingredients-section').find_all('li')
+
+        for li in ingredients_ele:
+            ingredients.append(li.text.strip())
+
+        nutritions = soup.find('div', class_='recipe-nutrition-section').text
+
+        summary = soup.find("div", class_="recipe-summary").text
+
+        # prep and cook timings
+        prep_cook_summary_ele = soup.find_all("div", class_="recipe-meta-item")
+
+        prep_cook_timings_list = []
+        for ele in prep_cook_summary_ele:
+            prep_cook_timings_list.append(ele.text.strip())
+
+        prep_cook_timings = ",".join(prep_cook_timings_list)
+
+        print(title,summary,prep_cook_timings,image_url)
+
+       
 
     def extract(self, url):
         response = requests.get(url)
