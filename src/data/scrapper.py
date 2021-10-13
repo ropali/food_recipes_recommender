@@ -33,6 +33,10 @@ class Scrapper:
         return response.text
 
     def extract_recipe(self, url):
+        if self.url_visted.find(url):
+            self.logger.info(f'Already processed this url {url}')
+            return
+
         page = self.get_html_document(url)
 
         soup = BeautifulSoup(page, 'lxml')
@@ -95,13 +99,14 @@ class Scrapper:
             "prep_cook_timings": prep_cook_timings,
             "image_url": image_url
         }
-        # print(ingredients)
+        
         self.model.save(data)
         self.logger.info(f"Saving {title} recipe to the database...")
+        self.url_visted.save({'link': url})
 
        
 
-    def extract(self, url):
+    def extract_api(self, url):
         response = requests.get(url)
 
         data = response.json()
@@ -128,10 +133,11 @@ class Scrapper:
             url = self.base_url.format(i+1)
 
             if self.url_visted.find(url):
+                self.logger.info(f'Already processed page no. {i+1}')
                 return
             
 
-            self.extract(url)
+            self.extract_api(url)
 
             self.url_visted.save({'link': url})
 
