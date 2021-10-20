@@ -11,21 +11,12 @@ class Scrapper:
     """Scraps the data from allrecipes.com"""
 
     sleep_for = 2
-
-    data = []
-
-    source_name = "allrecipes.com"  # source of the data
-
-    # total_pages = 37
-    total_pages = 200
-
-    # indian foods
-    # base_url = "https://www.allrecipes.com/element-api/content-proxy/aggregate-load-more?sourceFilter[]=alrcom&id=cms%2Fonecms_posts_alrcom_2007692&excludeIds[]=cms%2Fallrecipes_recipe_alrcom_142967&excludeIds[]=cms%2Fonecms_posts_alrcom_231026&excludeIds[]=cms%2Fonecms_posts_alrcom_247233&excludeIds[]=cms%2Fonecms_posts_alrcom_246179&excludeIds[]=cms%2Fonecms_posts_alrcom_256599&excludeIds[]=cms%2Fonecms_posts_alrcom_247204&excludeIds[]=cms%2Fonecms_posts_alrcom_34591&excludeIds[]=cms%2Fonecms_posts_alrcom_245131&excludeIds[]=cms%2Fonecms_posts_alrcom_220560&excludeIds[]=cms%2Fonecms_posts_alrcom_212721&excludeIds[]=cms%2Fonecms_posts_alrcom_236563&excludeIds[]=cms%2Fallrecipes_recipe_alrcom_14565&excludeIds[]=cms%2Fonecms_posts_alrcom_8189766&excludeIds[]=cms%2Fonecms_posts_alrcom_8188886&excludeIds[]=cms%2Fonecms_posts_alrcom_8189135&excludeIds[]=cms%2Fonecms_posts_alrcom_2052087&excludeIds[]=cms%2Fonecms_posts_alrcom_7986932&excludeIds[]=cms%2Fonecms_posts_alrcom_2040338&excludeIds[]=cms%2Fonecms_posts_alrcom_142967&excludeIds[]=cms%2Fonecms_posts_alrcom_174543&excludeIds[]=cms%2Fonecms_posts_alrcom_14565&excludeIds[]=cms%2Fonecms_posts_alrcom_72349&excludeIds[]=cms%2Fonecms_posts_alrcom_13087&excludeIds[]=cms%2Fonecms_posts_alrcom_141169&page={}&orderBy=Popularity30Days&docTypeFilter[]=content-type-recipe&docTypeFilter[]=content-type-gallery&size=24&pagesize=24&x-ssst=iTv629LHnNxfbQ1iVslBTZJTH69zVWEa&variant=food"
-
-    # all food
-    base_url = "https://www.allrecipes.com/element-api/content-proxy/aggregate-load-more?sourceFilter%5B%5D=alrcom&id=cms%2Fonecms_posts_alrcom_2000594&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_20185&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_85901&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_236322&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_237568&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_14415&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_187342&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_143587&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_16715&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_92462&excludeIds%5B%5D=cms%2Fallrecipes_recipe_alrcom_147103&excludeIds%5B%5D=cms%2Fallrecipes_recipe_alrcom_47717&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_272787&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_8183829&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_7848957&excludeIds%5B%5D=cms%2Fallrecipes_recipe_alrcom_32150&excludeIds%5B%5D=cms%2Fallrecipes_recipe_alrcom_215280&excludeIds%5B%5D=cms%2Fallrecipes_recipe_alrcom_213040&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_7739197&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_147103&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_221011&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_223549&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_156563&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_24264&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_143069&page={}&orderBy=Popularity30Days&docTypeFilter%5B%5D=content-type-recipe&docTypeFilter%5B%5D=content-type-gallery&size=24&pagesize=24&x-ssst=iTv629LHnNxfbQ1iVslBTZJTH69zVWEa&variant=food"
     
-    def __init__(self):
+    def __init__(self,base_url: str, total_pages: int,source_name=None):
+        self.base_url = base_url
+        self.total_pages = total_pages
+        self.source_name = source_name
+
         self.model = RecipeModel()
         self.url_visted = UrlVisited()
         self.logger = Logger(__name__, std_out=True)
@@ -108,8 +99,6 @@ class Scrapper:
         self.logger.info(f"Saving {title} recipe to the database...")
         self.url_visted.save({'link': url})
 
-       
-
     def extract_api(self, url):
         response = requests.get(url)
 
@@ -125,20 +114,18 @@ class Scrapper:
             self.extract_recipe(anchor_tag['href'])
             time.sleep(self.sleep_for)
            
-
-
     def start(self):
 
         self.logger.info(f'Started scrapping data from {self.source_name}')
 
-        for i in range(self.total_pages):
+        for i in range(int(self.total_pages)):
             self.logger.info(f'Processing page no. {i+1}')
 
             url = self.base_url.format(i+1)
 
-            if self.url_visted.find(url):
-                self.logger.info(f'Already processed page no. {i+1}')
-                continue
+            # if self.url_visted.find(url):
+            #     self.logger.info(f'Already processed page no. {i+1}')
+            #     continue
             
 
             self.extract_api(url)
@@ -151,7 +138,26 @@ class Scrapper:
 
 
 def start_scrapper():
-    Scrapper().start()
+    source_name = "allrecipes.com"
+
+    scrappers = [
+        {
+            "base_url": "https://www.allrecipes.com/element-api/content-proxy/aggregate-load-more?sourceFilter[]=alrcom&id=cms%2Fonecms_posts_alrcom_2007692&excludeIds[]=cms%2Fallrecipes_recipe_alrcom_142967&excludeIds[]=cms%2Fonecms_posts_alrcom_231026&excludeIds[]=cms%2Fonecms_posts_alrcom_247233&excludeIds[]=cms%2Fonecms_posts_alrcom_246179&excludeIds[]=cms%2Fonecms_posts_alrcom_256599&excludeIds[]=cms%2Fonecms_posts_alrcom_247204&excludeIds[]=cms%2Fonecms_posts_alrcom_34591&excludeIds[]=cms%2Fonecms_posts_alrcom_245131&excludeIds[]=cms%2Fonecms_posts_alrcom_220560&excludeIds[]=cms%2Fonecms_posts_alrcom_212721&excludeIds[]=cms%2Fonecms_posts_alrcom_236563&excludeIds[]=cms%2Fallrecipes_recipe_alrcom_14565&excludeIds[]=cms%2Fonecms_posts_alrcom_8189766&excludeIds[]=cms%2Fonecms_posts_alrcom_8188886&excludeIds[]=cms%2Fonecms_posts_alrcom_8189135&excludeIds[]=cms%2Fonecms_posts_alrcom_2052087&excludeIds[]=cms%2Fonecms_posts_alrcom_7986932&excludeIds[]=cms%2Fonecms_posts_alrcom_2040338&excludeIds[]=cms%2Fonecms_posts_alrcom_142967&excludeIds[]=cms%2Fonecms_posts_alrcom_174543&excludeIds[]=cms%2Fonecms_posts_alrcom_14565&excludeIds[]=cms%2Fonecms_posts_alrcom_72349&excludeIds[]=cms%2Fonecms_posts_alrcom_13087&excludeIds[]=cms%2Fonecms_posts_alrcom_141169&page={}&orderBy=Popularity30Days&docTypeFilter[]=content-type-recipe&docTypeFilter[]=content-type-gallery&size=24&pagesize=24&x-ssst=iTv629LHnNxfbQ1iVslBTZJTH69zVWEa&variant=food",
+            "total_pages": 37,
+            "source_name": source_name + " indian recipes",
+        },
+        {
+            "base_url": "https://www.allrecipes.com/element-api/content-proxy/aggregate-load-more?sourceFilter%5B%5D=alrcom&id=cms%2Fonecms_posts_alrcom_2000594&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_20185&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_85901&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_236322&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_237568&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_14415&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_187342&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_143587&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_16715&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_92462&excludeIds%5B%5D=cms%2Fallrecipes_recipe_alrcom_147103&excludeIds%5B%5D=cms%2Fallrecipes_recipe_alrcom_47717&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_272787&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_8183829&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_7848957&excludeIds%5B%5D=cms%2Fallrecipes_recipe_alrcom_32150&excludeIds%5B%5D=cms%2Fallrecipes_recipe_alrcom_215280&excludeIds%5B%5D=cms%2Fallrecipes_recipe_alrcom_213040&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_7739197&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_147103&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_221011&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_223549&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_156563&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_24264&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_143069&page={}&orderBy=Popularity30Days&docTypeFilter%5B%5D=content-type-recipe&docTypeFilter%5B%5D=content-type-gallery&size=24&pagesize=24&x-ssst=iTv629LHnNxfbQ1iVslBTZJTH69zVWEa&variant=food",
+            "total_pages": 200,
+            "source_name": source_name + " lunch recipes",
+        },
+        
+    ]
+
+    for scrapper in scrappers:
+        Scrapper(**scrapper).start()
+
+    
 
 
 if __name__ == '__main__':
