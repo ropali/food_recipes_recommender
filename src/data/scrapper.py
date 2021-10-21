@@ -123,9 +123,9 @@ class Scrapper:
 
             url = self.base_url.format(i+1)
 
-            # if self.url_visted.find(url):
-            #     self.logger.info(f'Already processed page no. {i+1}')
-            #     continue
+            if self.url_visted.find(url):
+                self.logger.info(f'Already processed page no. {i+1}')
+                continue
             
 
             self.extract_api(url)
@@ -151,6 +151,11 @@ def start_scrapper():
             "total_pages": 200,
             "source_name": source_name + " lunch recipes",
         },
+        {
+            "base_url": "https://www.allrecipes.com/element-api/content-proxy/aggregate-load-more?sourceFilter%5B%5D=alrcom&id=cms%2Fonecms_posts_alrcom_2005455&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_273864&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_280018&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_279934&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_279987&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_279909&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_279677&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_279648&excludeIds%5B%5D=cms%2Fallrecipes_recipe_alrcom_220751&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_272437&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_26317&excludeIds%5B%5D=cms%2Fallrecipes_recipe_alrcom_236609&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_260109&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_2052695&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_2053318&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_7737251&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_7735605&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_8097125&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_8091798&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_83557&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_8802&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_68461&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_281619&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_233983&excludeIds%5B%5D=cms%2Fonecms_posts_alrcom_285073&page={}&orderBy=Popularity30Days&docTypeFilter%5B%5D=content-type-recipe&docTypeFilter%5B%5D=content-type-gallery&size=24&pagesize=24&x-ssst=iTv629LHnNxfbQ1iVslBTZJTH69zVWEa&variant=food",
+            "total_pages": 250,
+            "source_name": source_name + " chicken recipes",
+        }
         
     ]
 
