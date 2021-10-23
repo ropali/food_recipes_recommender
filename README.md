@@ -1,7 +1,7 @@
-tourism_places_recommender
-==============================
+Food And Recipe Recommender System
+==================================
 
-A recommender system to recommend places to visit based on the places you have already visited
+A recommender system to recommend foods with the recipe based on the food they have already tried.
 
 Project Organization
 ------------
