@@ -24,6 +24,7 @@ def main():
 
     logger.info(f'Training Data Points {processed_df.shape}')
 
+    
     cv = CountVectorizer(max_features=5000,stop_words='english')
 
     vector = cv.fit_transform(processed_df['tags']).toarray()

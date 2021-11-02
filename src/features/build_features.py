@@ -38,7 +38,8 @@ class FeatureBuilder:
         
 
         self.df['tags'] = new_df.recipe + new_df.title + new_df.summary + new_df.ingredients
-       
+
+        self.df['tags'] = self.df['tags'].apply(lambda x: " ".join(x))
         
         self.logger.info(f"Finished feature building...")
 
