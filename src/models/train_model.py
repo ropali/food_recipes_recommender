@@ -31,7 +31,11 @@ def main():
 
     similarity = cosine_similarity(vector)
     
-    print(similarity)
+    model_path = 'models/similarity.pkl'
+    
+    pickle.dump(similarity,open(model_path,'wb'))
+    
+    logger.info(f'Similarity Model Saved at {model_path}')
 
 
 if __name__ == '__main__':
