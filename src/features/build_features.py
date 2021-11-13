@@ -28,13 +28,13 @@ class FeatureBuilder:
             to caclulate the similarity for recommender system.
         """
 
-        new_df = self.df.copy()[self.required_features]
+        new_df = self.df.copy()
 
         
-        new_df['recipe'] = new_df.recipe.str.split(' ')
-        new_df['title'] = new_df.title.str.split(' ')
-        new_df['summary'] = new_df.summary.str.split(' ')
-        new_df['ingredients'] = new_df.ingredients.str.split(' ')
+        new_df['recipe'] = new_df.recipe.str.split(',')
+        new_df['title'] = new_df.title.str.split(',')
+        new_df['summary'] = new_df.summary.str.split(',')
+        new_df['ingredients'] = new_df.ingredients.str.split(',')
         
 
         self.df['tags'] = new_df.recipe + new_df.title + new_df.summary + new_df.ingredients

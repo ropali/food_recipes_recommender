@@ -54,7 +54,7 @@ class Preprocessor:
                 # remove "Step {x}" from string 
                 master_string += re.sub(r'((step)|(Step)) \d', ' ', v)
         
-            return master_string.replace(',','').strip()
+            return master_string.strip()
 
         self.df['recipe'] = self.df.recipe.apply(_clean)
         self.logger.info("Cleaned recipe feature...")
@@ -64,7 +64,7 @@ class Preprocessor:
         def _clean(val):
             val_str = re.sub(r'[\\(\\)]|(II)', '', val)
             
-            return val_str.replace(',','').strip()
+            return val_str.strip()
 
 
         self.df['title'] = self.df.title.apply(_clean)
@@ -75,7 +75,7 @@ class Preprocessor:
         def _clean(val): 
             val_str = re.sub(r'[\\(\\)]|(II)', '', val)
             
-            return val_str.replace(',','').strip()
+            return val_str.strip()
 
 
         self.df['summary'] = self.df.summary.apply(_clean)
@@ -84,7 +84,7 @@ class Preprocessor:
     def _clean_ingred(self):
         """remove unwanted characters from the value"""
         def _clean(val):
-            sub_str = re.sub(r'[0-9]|(-)|[½¾¼⅓,]|(Optional)|[\\(\\)]', '', val)
+            sub_str = re.sub(r'[0-9]|(-)|[½¾¼⅓]|(Optional)|[\\(\\)]', '', val)
 
             return sub_str.strip()
 
@@ -93,7 +93,7 @@ class Preprocessor:
 
     def _clean_nutritions(self):
         """remove 'Per Serving:' and 'Full Nutrition' strings from it"""
-        self.df['nutritions'] = self.df.nutritions.apply(lambda x: x.replace('Per Serving:','').replace('Full Nutrition','').replace(',','').strip())
+        self.df['nutritions'] = self.df.nutritions.apply(lambda x: x.replace('Per Serving:','').replace('Full Nutrition','').strip())
         self.logger.info("Cleaned nutritions feature...")
 
     def _drop_cols(self):
@@ -107,7 +107,8 @@ class Preprocessor:
     def _remove_duplicates(self):
         dups_count = self.df.duplicated().sum()
         self.logger.info(f'Found {dups_count} duplicate records.')
-        self.df = self.df[~self.df.duplicated()]
+        
+        self.df = self.df.drop_duplicates('title', keep='last')
         self.logger.info('Removed all the duplicates records.')
 
 

@@ -22,6 +22,8 @@ def main():
 
     processed_df = feat_builder.build()
 
+    processed_df.to_csv('data/processed/processed.csv', index=False)
+    
     logger.info(f'Training Data Points {processed_df.shape}')
 
     
