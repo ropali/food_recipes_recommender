@@ -1,21 +1,18 @@
 Food And Recipe Recommender System
 ==================================
 
-A recommender system to recommend foods with the recipe based on the food they have already tried.
+A recommender system to recommend foods with the recipe based on the food you have already tried.
 
 Project Organization
 ------------
 
     ├── LICENSE
-    ├── Makefile           <- Makefile with commands like `make data` or `make train`
     ├── README.md          <- The top-level README for developers using this project.
     ├── data
     │   ├── external       <- Data from third party sources.
     │   ├── interim        <- Intermediate data that has been transformed.
     │   ├── processed      <- The final, canonical data sets for modeling.
     │   └── raw            <- The original, immutable data dump.
-    │
-    ├── docs               <- A default Sphinx project; see sphinx-doc.org for details
     │
     ├── models             <- Trained and serialized models, model predictions, or model summaries
     │
@@ -48,10 +45,53 @@ Project Organization
     │   │
     │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
     │       └── visualize.py
-    │
-    └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
 
 
 --------
+## Installation
+Clone this repo in your local machine. Create a virtual environment to install the packages like this,
 
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
+```
+> virtualenv venv
+```
+After it successfully creates virtual environment then activate it.
+
+```
+> source venv/bin/activate # for linux
+
+> .\venv\Scripts\actiavet # for windows
+```
+
+Now install all the require packages from `requirements.txt` file like this,
+
+```> pip install -r requirements.txt```
+
+
+## Dataset
+This repo already contains the data in `data/raw/data.csv` which you can directly use. Or you can scrape the data directly from the source using the script.The orinal way to generate a dataset is to collect a data from source and store it in the sqlite database & then export the dataset into .csv file.
+To scrape the data from source, run this command.
+```
+> python -m src.data.scrapper
+```
+To create the dataset as `.csv` file run this command,
+```
+> python -m src.data.make_dataset
+```
+
+
+## Training Model
+To train the model you can start the training by using this command,
+```
+> python -m src.models.train_model
+```
+All the in between steps like pre-processing,feature engineering, etc will be performed automatically. All the generated models will be saved in `models` directory.
+
+The recommender model will be created by using the `similarity` matrix method. 
+
+
+## Visualization
+Don't have any visualization right now but you can add your own if you want.
+
+
+## Logging 
+All the operations will be logged in the `debug.log` file which will be generated automatically once you start running the code.
